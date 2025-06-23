@@ -18,7 +18,6 @@ app.post("/api/users", (req, res) => {
   if (!username) {
     return res.status(400).send("username is invalid.");
   }
-
   createUserDoc([{ username }], (err, created) => {
     if (err) {
       return res.status(400).json({ error: err.message });
@@ -28,6 +27,30 @@ app.post("/api/users", (req, res) => {
       username: user.username,
       _id: user._id,
     });
+  });
+});
+
+app.post("/api/users/:_id/exercises", (req, res) => {
+  const id = req.params._id.trim();
+  let { description, duration, date } = req.body;
+  description = description && description.trim();
+  duration = duration && Number(duration);
+  date = date && date.trim();
+  if (!description && !duration) {
+    return res.status(400).send("description and duration are required.");
+  }
+  // date = false; date = invalid date format; date = valid date format;
+  if (!date || isNaN(new Date(date))) {
+    date = new Date().toDateString();
+  } else {
+    date = new Date(date).toDateString();
+  }
+
+  updateUserDoc(id, { description, duration, date }, (err, updated) => {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    res.status(200).json(updated);
   });
 });
 

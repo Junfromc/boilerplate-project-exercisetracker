@@ -1,5 +1,5 @@
-require(".env").config();
-const mongoose = require("mingoose");
+require("dotenv").config();
+const mongoose = require("mongoose");
 mongoose.connect(process.env.MONGO_URI);
 const mySchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -19,9 +19,9 @@ function createUserDoc(usernameArray, done){
     .then(data=>done(null, data))
     .catch(err=>done(err))
 }
-function updateUserDoc(id, exercises, done){
-    User.findByIdAndUpdate(id, {$inc:{count: 1}, $push:{log:exercises}}, {new: true})
-    .then(date=>done(null, date))
+function updateUserDoc(id, log, done){
+    User.findByIdAndUpdate(id, {$inc:{count: 1}, $push:{log:log}}, {new: true})
+    .then(data=>done(null, data))
     .catch(err=>done(err))
 }
 
