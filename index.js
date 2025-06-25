@@ -117,13 +117,13 @@ app.get("/api/users/:_id/logs", (req, res) => {
     if (!user) {
       return res.status(404).send("User not found.");
     }
-    const { username, _id, logs, count } = user;
+    const { username, _id, log, count } = user;
 
-    const logsWithRightDate = logs.map((log) => {
-      let rightDate = log.date.toDateString();
+    const logsWithRightDate = log.map((oneLog) => {
+      let rightDate = oneLog.date.toDateString();
       return {
-        description: log.description,
-        duration: log.duration,
+        description: oneLog.description,
+        duration: oneLog.duration,
         date: rightDate,
       };
     });
@@ -132,7 +132,7 @@ app.get("/api/users/:_id/logs", (req, res) => {
       _id,
       username,
       count,
-      logs: logsWithRightDate,
+      log: logsWithRightDate,
     });
   });
 });

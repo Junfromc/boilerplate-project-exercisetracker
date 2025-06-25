@@ -4,7 +4,7 @@ mongoose.connect(process.env.MONGO_URI);
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   count: { type: Number, default: 0 },
-  logs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Log" }],
+  log: [{ type: mongoose.Schema.Types.ObjectId, ref: "Log" }],
 });
 const logSchema = new mongoose.Schema({
   description: { type: String, required: true },
@@ -31,7 +31,7 @@ function updateUserDoc(id, log, done) {
         console.log(doc);
         User.findByIdAndUpdate(
           id,
-          { $inc: { count: 1 }, $push: { logs: doc._id } },
+          { $inc: { count: 1 }, $push: { log: doc._id } },
           { new: true }
         ).then((updated) => done(null, [doc, updated]));
       });
@@ -63,7 +63,7 @@ function getUserDocById(id, query, done) {
   }
   User.findById(id)
     .populate({
-      path: "logs",
+      path: "log",
       match: filter,
       select: "description duration date",
       options: { sort: { date: -1 }, limit: limit },
