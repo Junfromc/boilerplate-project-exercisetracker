@@ -57,7 +57,7 @@ app.post("/api/users/:_id/exercises", (req, res) => {
     if (err) {
       return res.status(400).json({ error: err.message });
     }
-    if(!result[0] || !result[1]){
+    if (!result[0] || !result[1]) {
       return res.status(404).send("User not found.");
     }
     const { _id, username } = result[1];
@@ -77,8 +77,8 @@ app.get("/api/users", (req, res) => {
     if (err) {
       return res.status(400).json({ error: err.messsage });
     }
-    if(!usersArray || usersArray.length === 0){
-      return res.status(404).send('No users found.');
+    if (!usersArray || usersArray.length === 0) {
+      return res.status(404).send("No users found.");
     }
     res.status(200).json(usersArray);
   });
@@ -118,11 +118,21 @@ app.get("/api/users/:_id/logs", (req, res) => {
       return res.status(404).send("User not found.");
     }
     const { username, _id, logs, count } = user;
+
+    const logsWithRightDate = logs.map((log) => {
+      let rightDate = log.date.toDateString();
+      return {
+        description: log.description,
+        duration: log.duration,
+        date: rightDate,
+      };
+    });
+
     res.status(200).json({
       _id,
       username,
       count,
-      logs,
+      logs: logsWithRightDate,
     });
   });
 });

@@ -68,7 +68,9 @@ function getUserDocById(id, query, done) {
       select: "description duration date",
       options: { sort: { date: -1 }, limit: limit },
     })
-    .exec(done);
+    .exec()
+    .then(user=>done(null, user))
+    .catch(err=>done(err));
 }
 // const mySchema = new mongoose.Schema({
 //   username: { type: String, required: true, unique: true },
