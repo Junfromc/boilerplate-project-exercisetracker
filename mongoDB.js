@@ -33,23 +33,42 @@ function updateUserDoc(id, log, done) {
           id,
           { $inc: { count: 1 }, $push: { logs: doc._id } },
           { new: true }
-        ).then((updated) => done(null, updated));
+        ).then((updated) => done(null, [doc, updated]));
       });
     })
     .catch((err) => done(err));
 }
 
-async function getUserDocs(done){
-  try{
-    const users = await User.find().select({username: 1, _id: 1});
+async function getUserDocs(done) {
+  try {
+    const users = await User.find().select({ username: 1, _id: 1 });
     done(null, users);
-  }catch(err){
+  } catch (err) {
     done(err);
   }
 }
 
-function getUserDocById(id, from, to, limit, done){
-  User.findById(id).populate()
+function getUserDocById(id, query, done) {
+  const { from, to, limit } = query;
+  let filter = {};
+  if (from === undefined && to === undefined) {
+    filter = {};
+  } else {
+    filter = {
+      date: {
+        $gte: from,
+        $lte: to,
+      },
+    };
+  }
+  User.findById(id)
+    .populate({
+      path: "logs",
+      match: filter,
+      select: "description duration date",
+      options: { sort: { date: -1 }, limit: limit },
+    })
+    .exec(done);
 }
 // const mySchema = new mongoose.Schema({
 //   username: { type: String, required: true, unique: true },
@@ -83,4 +102,6 @@ function getUserDocById(id, from, to, limit, done){
 
 exports.createUserDoc = createUserDoc;
 exports.updateUserDoc = updateUserDoc;
+exports.getUserDocById = getUserDocById;
+exports.getUserDocs = getUserDocs;
 exports.User = User;
